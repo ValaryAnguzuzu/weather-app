@@ -1,33 +1,31 @@
 function getWeather() {
-  const apiKey = "api";
-  const city = document.getElementById("city").value;
+  const city = document.getElementById("city").value.trim();
 
   if (!city) {
     alert("Please enter a city");
     return;
   }
 
-  const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
-  const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
+  const backendUrl = "http://localhost:5001"; // to change when deployed
 
-  fetch(currentWeatherUrl)
+  fetch(`${backendUrl}/weather?city=${encodeURIComponent(city)}`)
     .then((response) => response.json())
     .then((data) => {
       displayWeather(data);
     })
     .catch((error) => {
-      console.error("Error fetching current weather data:", error);
-      alert("Error fetching current weather data. Please try again.");
+      console.error("Error fetching weather data:", error);
+      alert("Error fetching weather data. Please try again.");
     });
 
-  fetch(forecastUrl)
+  fetch(`${backendUrl}/forecast?city=${encodeURIComponent(city)}`)
     .then((response) => response.json())
     .then((data) => {
       displayHourlyForecast(data.list);
     })
     .catch((error) => {
-      console.error("Error fetching hourly forecast data:", error);
-      alert("Error fetching hourly forecast data. Please try again.");
+      console.error("Error fetching forecast data:", error);
+      alert("Error fetching forecast data. Please try again.");
     });
 }
 
@@ -46,7 +44,7 @@ function displayWeather(data) {
     weatherInfoDiv.innerHTML = `<p>${data.message}</p>`;
   } else {
     const cityName = data.name;
-    const temperature = Math.round(data.main.temp - 273.15); // Convert to Celsius
+    const temperature = Math.round(data.main.temp);
     const description = data.weather[0].description;
     const iconCode = data.weather[0].icon;
     const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
@@ -71,7 +69,7 @@ function displayHourlyForecast(hourlyData) {
   next24Hours.forEach((item) => {
     const dateTime = new Date(item.dt * 1000); // Convert timestamp to milliseconds
     const hour = dateTime.getHours();
-    const temperature = Math.round(item.main.temp - 273.15); // Convert to Celsius
+    const temperature = Math.round(item.main.temp); 
     const iconCode = item.weather[0].icon;
     const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
 
