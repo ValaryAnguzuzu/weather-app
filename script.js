@@ -6,6 +6,9 @@ function getWeather() {
     return;
   }
 
+  // Save the searched city to local storage
+  localStorage.setItem("lastCity", city);
+
   const backendUrl = "http://localhost:5001"; // to change when deployed
 
   fetch(`${backendUrl}/weather?city=${encodeURIComponent(city)}`)
@@ -69,7 +72,7 @@ function displayHourlyForecast(hourlyData) {
   next24Hours.forEach((item) => {
     const dateTime = new Date(item.dt * 1000); // Convert timestamp to milliseconds
     const hour = dateTime.getHours();
-    const temperature = Math.round(item.main.temp); 
+    const temperature = Math.round(item.main.temp);
     const iconCode = item.weather[0].icon;
     const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
 
@@ -89,3 +92,13 @@ function showImage() {
   const weatherIcon = document.getElementById("weather-icon");
   weatherIcon.style.display = "block"; // Make the image visible once it's loaded
 }
+
+// Load last searched city on page load
+window.onload = function () {
+  const lastCity = localStorage.getItem("lastCity");
+
+  if (lastCity) {
+    document.getElementById("city").value = lastCity; // Pre-fill input field
+    getWeather(); // Fetch weather automatically
+  }
+};
